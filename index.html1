@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>बजट साथी · Budget Saathi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&family=Hind:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0e1a14;
+    --paper:#f7f3e8;
+    --panel:#13251c;
+    --panel-2:#0e1a14;
+    --emerald:#2f6f4f;
+    --emerald-bright:#5fcf8d;
+    --gold:#d4a843;
+    --rose:#c1574a;
+    --line:rgba(247,243,232,0.12);
+    --text-main:#f7f3e8;
+    --text-dim:#9fb3a8;
+
+    --display:'Fraunces', serif;
+    --hindi:'Tiro Devanagari Hindi', serif;
+    --body:'Hind', sans-serif;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    background:var(--ink);
+    background-image: radial-gradient(circle at 15% 0%, rgba(95,207,141,0.07), transparent 40%),
+                       radial-gradient(circle at 90% 90%, rgba(212,168,67,0.06), transparent 45%);
+    color:var(--text-main);
+    font-family:var(--body);
+    min-height:100vh;
+  }
+  .lang-hi [data-en]{ display:none; }
+  .lang-en [data-hi]{ display:none; }
+  .lang-en{ font-family:'Hind', sans-serif; }
+
+  .wrap{ max-width:980px; margin:0 auto; padding:0 22px 80px; }
+
+  header{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:26px 0; border-bottom:1px solid var(--line); margin-bottom:34px; flex-wrap:wrap; gap:14px;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand .mark{
+    width:38px; height:38px; border-radius:10px; background:linear-gradient(155deg, var(--emerald-bright), var(--emerald));
+    display:flex; align-items:center; justify-content:center; font-family:var(--display); font-weight:600; color:#0e1a14; font-size:1.1rem;
+  }
+  .brand .name{ font-family:var(--hindi); font-size:1.25rem; }
+  .lang-en .brand .name{ font-family:var(--display); font-weight:600; }
+
+  .lang-toggle{
+    display:flex; border:1px solid var(--line); border-radius:999px; overflow:hidden;
+  }
+  .lang-toggle button{
+    border:none; background:transparent; color:var(--text-dim); font-family:var(--body); font-weight:600;
+    font-size:0.82rem; padding:8px 16px; cursor:pointer; transition:0.25s;
+  }
+  .lang-toggle button.active{ background:var(--gold); color:#13251c; }
+
+  /* === Hero / Dial signature === */
+  .hero{ display:grid; grid-template-columns:1fr 1.2fr; gap:40px; align-items:center; margin-bottom:52px; }
+  @media (max-width:760px){ .hero{ grid-template-columns:1fr; } }
+
+  .dial-wrap{ display:flex; flex-direction:column; align-items:center; }
+  .dial{ position:relative; width:230px; height:230px; }
+  .dial svg{ transform:rotate(-90deg); }
+  .dial-track{ fill:none; stroke:rgba(247,243,232,0.08); stroke-width:14; }
+  .dial-fill{ fill:none; stroke:var(--emerald-bright); stroke-width:14; stroke-linecap:round; transition:stroke-dasharray 0.5s ease, stroke 0.4s; }
+  .dial-center{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+  }
+  .dial-center .amount{ font-family:var(--display); font-size:2.1rem; font-weight:600; }
+  .dial-center .sub{ font-size:0.78rem; color:var(--text-dim); margin-top:4px; }
+  .dial-legend{ margin-top:18px; font-size:0.85rem; color:var(--text-dim); text-align:center; }
+  .dial-legend strong{ color:var(--gold); }
+
+  .hero-right h1{
+    font-family:var(--hindi); font-size:clamp(1.8rem, 4vw, 2.5rem); font-weight:400; line-height:1.25; margin-bottom:14px;
+  }
+  .lang-en .hero-right h1{ font-family:var(--display); font-weight:600; }
+  .hero-right p{ color:var(--text-dim); font-size:0.95rem; line-height:1.65; max-width:440px; margin-bottom:22px; }
+
+  .budget-set{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .budget-set input{
+    background:var(--panel); border:1px solid var(--line); border-radius:10px; color:var(--text-main);
+    padding:11px 14px; font-family:var(--body); font-size:0.95rem; width:160px;
+  }
+  .budget-set button{
+    background:var(--emerald-bright); color:#0e1a14; border:none; border-radius:10px; padding:11px 20px;
+    font-family:var(--body); font-weight:600; font-size:0.9rem; cursor:pointer; transition:0.25s;
+  }
+  .budget-set button:hover{ opacity:0.85; }
+
+  /* === Section pattern === */
+  .sec-label{
+    text-transform:uppercase; letter-spacing:2px; font-size:0.72rem; color:var(--gold); font-weight:700;
+    display:flex; align-items:center; gap:10px; margin-bottom:16px;
+  }
+  .sec-label::before{ content:''; width:24px; height:1px; background:var(--gold); }
+
+  /* === Add expense form === */
+  .panel{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:28px; margin-bottom:44px;
+  }
+  .form-row{ display:grid; grid-template-columns:1fr 1fr 1.3fr auto; gap:12px; }
+  @media (max-width:700px){ .form-row{ grid-template-columns:1fr 1fr; } }
+  .form-row input, .form-row select{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:10px; color:var(--text-main);
+    padding:11px 13px; font-family:var(--body); font-size:0.92rem; width:100%;
+  }
+  .form-row select{ cursor:pointer; }
+  .add-btn{
+    background:var(--gold); color:#13251c; border:none; border-radius:10px; padding:11px 18px;
+    font-family:var(--body); font-weight:700; font-size:0.9rem; cursor:pointer; white-space:nowrap; transition:0.25s;
+  }
+  .add-btn:hover{ opacity:0.85; }
+
+  /* === Category bars === */
+  .cat-grid{ display:flex; flex-direction:column; gap:14px; }
+  .cat-row{ display:grid; grid-template-columns:120px 1fr 90px; align-items:center; gap:14px; }
+  .cat-row .cname{ font-size:0.88rem; color:var(--text-dim); }
+  .cat-bar-bg{ height:9px; border-radius:5px; background:rgba(247,243,232,0.07); overflow:hidden; }
+  .cat-bar-fill{ height:100%; border-radius:5px; transition:width 0.5s ease; }
+  .cat-row .camt{ font-family:var(--display); font-weight:600; font-size:0.9rem; text-align:right; }
+
+  /* === Transaction list === */
+  .tx-list{ display:flex; flex-direction:column; gap:2px; }
+  .tx-item{
+    display:flex; justify-content:space-between; align-items:center; padding:15px 6px;
+    border-bottom:1px solid var(--line);
+  }
+  .tx-left{ display:flex; align-items:center; gap:14px; }
+  .tx-badge{
+    width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    font-size:1.1rem; flex-shrink:0;
+  }
+  .tx-meta .tx-note{ font-size:0.92rem; }
+  .tx-meta .tx-date{ font-size:0.76rem; color:var(--text-dim); margin-top:2px; }
+  .tx-right{ display:flex; align-items:center; gap:14px; }
+  .tx-amt{ font-family:var(--display); font-weight:600; color:var(--rose); }
+  .tx-del{
+    background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:1rem; padding:4px;
+    transition:0.2s;
+  }
+  .tx-del:hover{ color:var(--rose); }
+  .empty-state{ text-align:center; padding:50px 0; color:var(--text-dim); font-size:0.92rem; }
+
+  footer{ text-align:center; color:var(--text-dim); font-size:0.78rem; padding-top:30px; border-top:1px solid var(--line); }
+</style>
+</head>
+<body class="lang-hi">
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="mark">₹</div>
+      <div class="name" data-hi>बजट साथी</div>
+      <div class="name" data-en>Budget Saathi</div>
+    </div>
+    <div class="lang-toggle">
+      <button id="btnHi" class="active">हिंदी</button>
+      <button id="btnEn">English</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="dial-wrap">
+      <div class="dial">
+        <svg width="230" height="230" viewBox="0 0 230 230">
+          <circle class="dial-track" cx="115" cy="115" r="100"></circle>
+          <circle class="dial-fill" id="dialFill" cx="115" cy="115" r="100"
+                  stroke-dasharray="0 628"></circle>
+        </svg>
+        <div class="dial-center">
+          <div class="amount" id="spentAmt">₹0</div>
+          <div class="sub" data-hi>इस महीने खर्च</div>
+          <div class="sub" data-en>spent this month</div>
+        </div>
+      </div>
+      <div class="dial-legend">
+        <span data-hi>बजट: <strong id="budgetShowHi">सेट नहीं किया</strong></span>
+        <span data-en>Budget: <strong id="budgetShowEn">not set</strong></span>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <h1 data-hi>हर रुपये का हिसाब, एक ही जगह</h1>
+      <h1 data-en>Every rupee, tracked in one place</h1>
+      <p data-hi>अपना मासिक बजट सेट करें, खर्च जोड़ें और देखें कि पैसा कहाँ जा रहा है — बिना किसी इंटरनेट के, आपका डेटा सिर्फ़ आपके फ़ोन/ब्राउज़र में सुरक्षित रहता है।</p>
+      <p data-en>Set a monthly budget, log expenses, and see exactly where your money goes — works fully offline, your data stays only on your own device.</p>
+      <div class="budget-set">
+        <input type="number" id="budgetInput" placeholder="मासिक बजट ₹" data-hi-ph="मासिक बजट ₹" data-en-ph="Monthly budget ₹">
+        <button id="setBudgetBtn"><span data-hi>बजट सेट करें</span><span data-en>Set budget</span></button>
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-label"><span data-hi>नया खर्च जोड़ें</span><span data-en>Add an expense</span></div>
+  <div class="panel">
+    <div class="form-row">
+      <input type="number" id="amtInput" placeholder="₹ राशि" data-hi-ph="₹ राशि" data-en-ph="₹ amount">
+      <select id="catInput"></select>
+      <input type="text" id="noteInput" placeholder="नोट (जैसे: सब्ज़ी, बस किराया)" data-hi-ph="नोट (जैसे: सब्ज़ी)" data-en-ph="Note (e.g. groceries)">
+      <button class="add-btn" id="addBtn"><span data-hi>जोड़ें</span><span data-en>Add</span></button>
+    </div>
+  </div>
+
+  <div class="sec-label"><span data-hi>श्रेणी अनुसार खर्च</span><span data-en>Spending by category</span></div>
+  <div class="panel">
+    <div class="cat-grid" id="catGrid"></div>
+  </div>
+
+  <div class="sec-label"><span data-hi>हाल के खर्च</span><span data-en>Recent expenses</span></div>
+  <div class="panel">
+    <div class="tx-list" id="txList"></div>
+  </div>
+
+  <footer>
+    <span data-hi>आपका डेटा केवल आपके ब्राउज़र में सेव होता है — कोई सर्वर नहीं, कोई ट्रैकिंग नहीं।</span>
+    <span data-en>Your data is saved only in your browser — no server, no tracking.</span>
+  </footer>
+</div>
+
+<script>
+/* ========== CATEGORIES ========== */
+const CATEGORIES = [
+  { id:'food',     hi:'खाना',        en:'Food',          color:'#5fcf8d', icon:'🍛' },
+  { id:'travel',   hi:'यात्रा',       en:'Travel',        color:'#d4a843', icon:'🚌' },
+  { id:'bills',    hi:'बिल',         en:'Bills',         color:'#c1574a', icon:'🧾' },
+  { id:'shopping', hi:'खरीदारी',     en:'Shopping',      color:'#7a9fd1', icon:'🛍️' },
+  { id:'health',   hi:'स्वास्थ्य',    en:'Health',        color:'#cf7fc7', icon:'💊' },
+  { id:'other',    hi:'अन्य',        en:'Other',         color:'#9fb3a8', icon:'✦' },
+];
+
+/* ========== STATE / STORAGE ========== */
+const STORE_KEY = 'budget-saathi-v1';
+let state = loadState();
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return { budget:0, txs:[] };
+}
+function saveState(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+/* ========== LANGUAGE ========== */
+let lang = 'hi';
+function setLang(l){
+  lang = l;
+  document.body.classList.toggle('lang-hi', l==='hi');
+  document.body.classList.toggle('lang-en', l==='en');
+  document.getElementById('btnHi').classList.toggle('active', l==='hi');
+  document.getElementById('btnEn').classList.toggle('active', l==='en');
+  document.querySelectorAll('[data-hi-ph]').forEach(el=>{
+    el.placeholder = l==='hi' ? el.dataset.hiPh : el.dataset.enPh;
+  });
+  renderCategorySelect();
+  render();
+}
+document.getElementById('btnHi').addEventListener('click', ()=>setLang('hi'));
+document.getElementById('btnEn').addEventListener('click', ()=>setLang('en'));
+
+function renderCategorySelect(){
+  const sel = document.getElementById('catInput');
+  const prev = sel.value;
+  sel.innerHTML = CATEGORIES.map(c=>`<option value="${c.id}">${c.icon} ${lang==='hi'?c.hi:c.en}</option>`).join('');
+  if(prev) sel.value = prev;
+}
+
+/* ========== BUDGET ========== */
+document.getElementById('setBudgetBtn').addEventListener('click', ()=>{
+  const v = parseFloat(document.getElementById('budgetInput').value);
+  if(!v || v<=0) return;
+  state.budget = v;
+  document.getElementById('budgetInput').value = '';
+  saveState();
+  render();
+});
+
+/* ========== ADD EXPENSE ========== */
+document.getElementById('addBtn').addEventListener('click', addExpense);
+document.getElementById('amtInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addExpense(); });
+document.getElementById('noteInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addExpense(); });
+
+function addExpense(){
+  const amt = parseFloat(document.getElementById('amtInput').value);
+  const cat = document.getElementById('catInput').value;
+  const note = document.getElementById('noteInput').value.trim();
+  if(!amt || amt<=0) return;
+  state.txs.unshift({
+    id: Date.now(),
+    amt, cat,
+    note: note || (CATEGORIES.find(c=>c.id===cat)||{}).hi || '',
+    date: new Date().toISOString()
+  });
+  document.getElementById('amtInput').value = '';
+  document.getElementById('noteInput').value = '';
+  saveState();
+  render();
+}
+
+function deleteTx(id){
+  state.txs = state.txs.filter(t=>t.id!==id);
+  saveState();
+  render();
+}
+
+/* ========== RENDER ========== */
+function monthKey(d){ const dt=new Date(d); return dt.getFullYear()+'-'+dt.getMonth(); }
+const thisMonth = monthKey(new Date());
+
+function render(){
+  const monthTxs = state.txs.filter(t=>monthKey(t.date)===thisMonth);
+  const totalSpent = monthTxs.reduce((s,t)=>s+t.amt,0);
+  const budget = state.budget || 0;
+
+  // dial
+  const pct = budget>0 ? Math.min(totalSpent/budget,1) : 0;
+  const circumference = 2*Math.PI*100;
+  const dash = pct*circumference;
+  const fill = document.getElementById('dialFill');
+  fill.setAttribute('stroke-dasharray', `${dash} ${circumference}`);
+  fill.style.stroke = pct<0.7 ? '#5fcf8d' : (pct<1 ? '#d4a843' : '#c1574a');
+
+  document.getElementById('spentAmt').textContent = '₹'+totalSpent.toLocaleString('en-IN');
+  document.getElementById('budgetShowHi').textContent = budget>0 ? '₹'+budget.toLocaleString('en-IN') : 'सेट नहीं किया';
+  document.getElementById('budgetShowEn').textContent = budget>0 ? '₹'+budget.toLocaleString('en-IN') : 'not set';
+
+  // category breakdown
+  const catGrid = document.getElementById('catGrid');
+  const catTotals = CATEGORIES.map(c=>{
+    const sum = monthTxs.filter(t=>t.cat===c.id).reduce((s,t)=>s+t.amt,0);
+    return {...c, sum};
+  }).filter(c=>c.sum>0).sort((a,b)=>b.sum-a.sum);
+
+  if(catTotals.length===0){
+    catGrid.innerHTML = `<div class="empty-state">
+      <span data-hi style="display:${lang==='hi'?'block':'none'}">अभी तक कोई खर्च दर्ज नहीं हुआ</span>
+      <span data-en style="display:${lang==='en'?'block':'none'}">No expenses logged yet</span>
+    </div>`;
+  } else {
+    const maxSum = Math.max(...catTotals.map(c=>c.sum));
+    catGrid.innerHTML = catTotals.map(c=>`
+      <div class="cat-row">
+        <div class="cname">${c.icon} ${lang==='hi'?c.hi:c.en}</div>
+        <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:${(c.sum/maxSum*100)}%; background:${c.color};"></div></div>
+        <div class="camt">₹${c.sum.toLocaleString('en-IN')}</div>
+      </div>
+    `).join('');
+  }
+
+  // transaction list (latest 12 overall, not just this month)
+  const txList = document.getElementById('txList');
+  const recent = state.txs.slice(0,12);
+  if(recent.length===0){
+    txList.innerHTML = `<div class="empty-state">
+      <span style="display:${lang==='hi'?'block':'none'}">अभी तक कोई खर्च जोड़ा नहीं गया</span>
+      <span style="display:${lang==='en'?'block':'none'}">No expenses added yet</span>
+    </div>`;
+  } else {
+    txList.innerHTML = recent.map(t=>{
+      const c = CATEGORIES.find(x=>x.id===t.cat) || CATEGORIES[CATEGORIES.length-1];
+      const dt = new Date(t.date);
+      const dateStr = dt.toLocaleDateString(lang==='hi'?'hi-IN':'en-IN', {day:'numeric', month:'short'});
+      return `<div class="tx-item">
+        <div class="tx-left">
+          <div class="tx-badge" style="background:${c.color}22; color:${c.color};">${c.icon}</div>
+          <div class="tx-meta">
+            <div class="tx-note">${t.note}</div>
+            <div class="tx-date">${dateStr} · ${lang==='hi'?c.hi:c.en}</div>
+          </div>
+        </div>
+        <div class="tx-right">
+          <div class="tx-amt">−₹${t.amt.toLocaleString('en-IN')}</div>
+          <button class="tx-del" onclick="deleteTx(${t.id})" aria-label="delete">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+/* ========== INIT ========== */
+renderCategorySelect();
+render();
+</script>
+</body>
+</html>
